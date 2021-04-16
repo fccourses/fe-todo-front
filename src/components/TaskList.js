@@ -1,12 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import qs from 'query-string';
 import * as ActionCreators from '../actions';
+import Error from './Error';
 import Task from './Task';
 
 const TaskList = props => {
   const { tasks, isFetching, error } = useSelector(({ task }) => task);
   const dispatch = useDispatch();
+
+  const location = useLocation();
+  const [search, setSearch] = useState(qs.parse(location.search));
 
   const {
     getTasksRequest,
@@ -15,20 +21,20 @@ const TaskList = props => {
   } = bindActionCreators(ActionCreators, dispatch);
 
   useEffect(() => {
-    getTasksRequest();
-  }, []);
+    setSearch(qs.parse(location.search));
+  }, [location.search]);
+
+  console.log(search, location.search);
+
+  useEffect(() => {
+    getTasksRequest(search);
+  }, [search]);
 
   return (
     <div>
-      {error && (
-        <div style={{ color: 'red', display: 'flex' }}>
-          <p>{error.message}</p>
-          <button onClick={clearTaskError}>X</button>
-        </div>
-      )}
-
+      {error && <Error error={error} clearError={clearTaskError} />}
       {tasks.map(task => (
-        <Task {...task} deleteTaskRequest={deleteTaskRequest} />
+        <Task key={task.id} {...task} deleteTaskRequest={deleteTaskRequest} />
       ))}
     </div>
   );

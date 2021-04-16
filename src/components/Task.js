@@ -7,7 +7,7 @@ const Task = props => {
       <h1>ID: {id}</h1>
       <h2>{body}</h2>
       <p>
-        Is done: <input type='checkbox' checked={isDone} />
+        Is done: <input type='checkbox' checked={isDone} onChange={() => {}} />
       </p>
       <p>{deadline}</p>
       <button onClick={() => deleteTaskRequest(id)}>Delete task</button>
